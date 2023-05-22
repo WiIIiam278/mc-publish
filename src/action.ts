@@ -199,6 +199,86 @@ export interface McPublishInput {
     };
 
     /**
+     * Options used to publish Minecraft projects to Hangar.
+     */
+    hangar?: {
+        /**
+         * The namespace of your Hangar project (in the format 'owner/project')
+         */
+        namespace?: string;
+
+        /**
+         * A Hangar API key with the neccessary permissions
+         */
+        apiKey?: SecureString;
+
+        /**
+         * An array of globs determining which files to upload.
+         */
+        files?: FileInfo[];
+
+        /**
+         * The name of the version.
+         */
+        name?: string;
+
+        /**
+         * The version number.
+         */
+        version?: string;
+
+        /**
+         * The version type - alpha, beta, or release.
+         */
+        versionType?: VersionType;
+
+        /**
+         * The changelog for this version.
+         */
+        changelog?: string;
+
+        /**
+         * An array of supported mod loaders.
+         */
+        loaders?: string[];
+
+        /**
+         * An array of supported Minecraft versions.
+         */
+        gameVersions?: string[];
+
+        /**
+         * An array of dependencies required by your project.
+         */
+        dependencies?: Dependency[];
+
+        /**
+         * Controls the method used to filter game versions.
+         */
+        gameVersionFilter?: GameVersionFilter;
+
+        /**
+         * An array of Java versions compatible with your project.
+         */
+        java?: JavaVersion[];
+
+        /**
+         * Defines the maximum number of asset publishing attempts.
+         */
+        retryAttempts?: number;
+
+        /**
+         * Specifies the delay (in milliseconds) between asset publishing attempts.
+         */
+        retryDelay?: number;
+
+        /**
+         * Controls how the action responds to errors during the mod publishing process.
+         */
+        failMode?: FailMode;
+    };
+
+    /**
      * Options used to publish Minecraft projects to GitHub.
      */
     github?: {
@@ -380,6 +460,11 @@ export type ModrinthUploadRequest = McPublishInput["modrinth"];
 export type CurseForgeUploadRequest = McPublishInput["curseforge"];
 
 /**
+ * Options used to publish Minecraft projects to Hangar.
+ */
+export type HangarUploadRequest = McPublishInput["hangar"];
+
+/**
  * Options used to publish Minecraft projects to GitHub.
  */
 export type GitHubUploadRequest = McPublishInput["github"];
@@ -473,6 +558,11 @@ export type ModrinthUploadReport = McPublishOutput["modrinth"];
  * Report detailing the status of the project published on CurseForge.
  */
 export type CurseForgeUploadReport = McPublishOutput["curseforge"];
+
+/**
+ * Report detailing the status of the project published on Hangar.
+ */
+export type HangarUploadReport = McPublishOutput["hangar"];
 
 /**
  * Report detailing the status of the project published on GitHub.

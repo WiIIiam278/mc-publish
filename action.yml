@@ -30,6 +30,9 @@ groups:
     curseforge:
       type: CurseForgeUploadRequest
       description: Options used to publish Minecraft projects to CurseForge.
+    hangar:
+      type: HangarUploadRequest
+      description: Options used to publish Minecraft projects to Hangar.
     github:
       type: GitHubUploadRequest
       description: Options used to publish Minecraft projects to GitHub.
@@ -40,6 +43,9 @@ groups:
     curseforge:
       type: CurseForgeUploadReport
       description: Report detailing the status of the project published on CurseForge.
+    hangar:
+      type: HangarUploadReport
+      description: Report detailing the status of the project published on Hangar.
     github:
       type: GitHubUploadReport
       description: Report detailing the status of the project published on GitHub.
@@ -72,6 +78,16 @@ inputs:
   curseforge-token:
     type: utils.security.SecureString
     description: Your CurseForge API token.
+    required: false
+    default: ${undefined}
+  hangar-namespace:
+    type: string
+    description: The namespace of your Hangar project (in the format 'owner/project')
+    required: false
+    default: ${undefined}
+  hangar-api-key:
+    type: utils.security.SecureString
+    description: A Hangar API key with the neccessary permissions
     required: false
     default: ${undefined}
   github-tag:
@@ -221,6 +237,11 @@ inputs:
     description: An array of globs determining which files to upload.
     default: ${undefined}
     required: false
+  hangar-files:
+    type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
+    description: An array of globs determining which files to upload.
+    default: ${undefined}
+    required: false
   github-files:
     type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
     description: An array of globs determining which files to upload.
@@ -236,6 +257,13 @@ inputs:
   curseforge-files-primary:
     type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
     redirect: curseforge-files
+    description: A glob determining the primary files to upload.
+    deprecationMessage: Please, use 'files' instead.
+    required: false
+    default: ${undefined}
+  hangar-files-primary:
+    type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
+    redirect: hangar-files
     description: A glob determining the primary files to upload.
     deprecationMessage: Please, use 'files' instead.
     required: false
@@ -261,6 +289,13 @@ inputs:
     deprecationMessage: Please, use 'files' instead.
     required: false
     default: ${undefined}
+  hangar-files-secondary:
+    type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
+    redirect: hangar-void
+    description: A glob determining the secondary files to upload.
+    deprecationMessage: Please, use 'files' instead.
+    required: false
+    default: ${undefined}
   github-files-secondary:
     type: utils.io.FileInfo[]:{findFiles}?processSeparately=false
     redirect: github-void
@@ -274,6 +309,11 @@ inputs:
     required: false
     default: ${undefined}
   curseforge-name:
+    type: string
+    description: The name of the version.
+    required: false
+    default: ${undefined}
+  hangar-name:
     type: string
     description: The name of the version.
     required: false
@@ -293,6 +333,11 @@ inputs:
     description: The version number.
     required: false
     default: ${undefined}
+  hangar-version:
+    type: string
+    description: The version number.
+    required: false
+    default: ${undefined}
   github-version:
     type: string
     description: The version number.
@@ -308,6 +353,11 @@ inputs:
     description: The version type - alpha, beta, or release.
     required: false
     default: ${undefined}
+  hangar-version-type:
+    type: utils.versioning.VersionType
+    description: The version type - alpha, beta, or release.
+    required: false
+    default: ${undefined}
   github-version-type:
     type: utils.versioning.VersionType
     description: The version type - alpha, beta, or release.
@@ -319,6 +369,11 @@ inputs:
     required: false
     default: ${undefined}
   curseforge-changelog:
+    type: string
+    description: The changelog for this version.
+    required: false
+    default: ${undefined}
+  hangar-changelog:
     type: string
     description: The changelog for this version.
     required: false
@@ -340,6 +395,12 @@ inputs:
     description: A glob pointing to the changelog file.
     required: false
     default: ${undefined}
+  hangar-changelog-file:
+    type: string;utils/io/file-info->{readAllText}
+    redirect: hangar-changelog
+    description: A glob pointing to the changelog file.
+    required: false
+    default: ${undefined}
   github-changelog-file:
     type: string;utils/io/file-info->{readAllText}
     redirect: github-changelog
@@ -352,6 +413,11 @@ inputs:
     required: false
     default: ${undefined}
   curseforge-loaders:
+    type: string[]?separator=/\s%2B/
+    description: An array of supported mod loaders.
+    required: false
+    default: ${undefined}
+  hangar-loaders:
     type: string[]?separator=/\s%2B/
     description: An array of supported mod loaders.
     required: false
@@ -371,6 +437,11 @@ inputs:
     description: An array of supported Minecraft versions.
     required: false
     default: ${undefined}
+  hangar-game-versions:
+    type: string[]
+    description: An array of supported Minecraft versions.
+    required: false
+    default: ${undefined}
   github-game-versions:
     type: string[]
     description: An array of supported Minecraft versions.
@@ -382,6 +453,11 @@ inputs:
     required: false
     default: ${undefined}
   curseforge-dependencies:
+    type: dependencies.Dependency[]
+    description: An array of dependencies required by your project.
+    required: false
+    default: ${undefined}
+  hangar-dependencies:
     type: dependencies.Dependency[]
     description: An array of dependencies required by your project.
     required: false
@@ -405,6 +481,13 @@ inputs:
     deprecationMessage: Please, use 'game-version-filter' instead.
     required: false
     default: ${undefined}
+  hangar-version-resolver:
+    type: games.GameVersionFilter:fromVersionResolver
+    redirect: hangar-game-version-filter
+    description: Controls the method used to automatically resolve game versions.
+    deprecationMessage: Please, use 'game-version-filter' instead.
+    required: false
+    default: ${undefined}
   github-version-resolver:
     type: games.GameVersionFilter:fromVersionResolver
     redirect: github-game-version-filter
@@ -418,6 +501,11 @@ inputs:
     default: ${undefined}
     required: false
   curseforge-game-version-filter:
+    type: games.GameVersionFilter
+    description: Controls the method used to filter game versions.
+    default: ${undefined}
+    required: false
+  hangar-game-version-filter:
     type: games.GameVersionFilter
     description: Controls the method used to filter game versions.
     default: ${undefined}
@@ -437,6 +525,11 @@ inputs:
     description: An array of Java versions compatible with your project.
     required: false
     default: ${undefined}
+  hangar-java:
+    type: utils.java.JavaVersion[]
+    description: An array of Java versions compatible with your project.
+    required: false
+    default: ${undefined}
   github-java:
     type: utils.java.JavaVersion[]
     description: An array of Java versions compatible with your project.
@@ -448,6 +541,11 @@ inputs:
     default: ${undefined}
     required: false
   curseforge-retry-attempts:
+    description: Defines the maximum number of asset publishing attempts.
+    type: number
+    default: ${undefined}
+    required: false
+  hangar-retry-attempts:
     description: Defines the maximum number of asset publishing attempts.
     type: number
     default: ${undefined}
@@ -467,6 +565,11 @@ inputs:
     type: number
     default: ${undefined}
     required: false
+  hangar-retry-delay:
+    description: Specifies the delay (in milliseconds) between asset publishing attempts.
+    type: number
+    default: ${undefined}
+    required: false
   github-retry-delay:
     description: Specifies the delay (in milliseconds) between asset publishing attempts.
     type: number
@@ -479,6 +582,12 @@ inputs:
     default: ${undefined}
     required: false
   curseforge-fail-mode:
+    type: utils.errors.FailMode
+    description: Controls how the action responds to errors during the mod
+      publishing process.
+    default: ${undefined}
+    required: false
+  hangar-fail-mode:
     type: utils.errors.FailMode
     description: Controls how the action responds to errors during the mod
       publishing process.

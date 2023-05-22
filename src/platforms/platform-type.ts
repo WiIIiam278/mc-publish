@@ -17,6 +17,11 @@ enum PlatformTypeValues {
     MODRINTH = "modrinth",
 
     /**
+     * Represents Hangar.
+     */
+    HANGAR = "hangar",
+
+    /**
      * Represents GitHub.
      */
     GITHUB = "github",

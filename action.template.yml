@@ -23,6 +23,9 @@ groups:
     curseforge:
       type: CurseForgeUploadRequest
       description: Options used to publish Minecraft projects to CurseForge.
+    hangar:
+      type: HangarUploadRequest
+      description: Options used to publish Minecraft projects to Hangar.
     github:
       type: GitHubUploadRequest
       description: Options used to publish Minecraft projects to GitHub.
@@ -33,6 +36,9 @@ groups:
     curseforge:
       type: CurseForgeUploadReport
       description: Report detailing the status of the project published on CurseForge.
+    hangar:
+      type: HangarUploadReport
+      description: Report detailing the status of the project published on Hangar.
     github:
       type: GitHubUploadReport
       description: Report detailing the status of the project published on GitHub.
@@ -58,6 +64,13 @@ inputs:
   curseforge-token:
     type: utils.security.SecureString
     description: Your CurseForge API token.
+
+  hangar-namespace:
+    type: string
+    description: The namespace of your Hangar project (in the format 'owner/project')
+  hangar-api-key:
+    type: utils.security.SecureString
+    description: A Hangar API key with the neccessary permissions
 
   github-tag:
     type: string
