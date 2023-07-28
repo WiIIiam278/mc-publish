@@ -24689,7 +24689,23 @@ function hangar_createVersion(author, slug, data, files, loaders, gameVersions, 
         });
     });
     platforms.forEach((platform) => {
-        data.platformDependencies[platform] = gameVersions;
+        switch (platform) {
+            case HangarPlatform.Paper:
+                data.platformDependencies[platform] = gameVersions;
+                break;
+            case HangarPlatform.Waterfall:
+                data.platformDependencies[platform] = gameVersions.forEach((version) => {
+                    const versionParts = version.split('.');
+                    if (versionParts.length > 2) {
+                        versionParts.pop();
+                    }
+                    return versionParts.join('.');
+                });
+                break;
+            case HangarPlatform.Velocity:
+                data.platformDependencies[platform] = "3.2";
+                break;
+        }
     });
     form.append('versionUpload', JSON.stringify(data), { contentType: 'application/json' });
     const response = lib_default()(`${hangar_baseUrl}/projects/${author}/${slug}/upload`, {
