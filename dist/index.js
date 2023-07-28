@@ -24703,7 +24703,7 @@ function hangar_createVersion(author, slug, data, files, loaders, gameVersions, 
                 });
                 break;
             case HangarPlatform.Velocity:
-                data.platformDependencies[platform] = "3.2";
+                data.platformDependencies[platform] = ["3.2"];
                 break;
         }
     });
