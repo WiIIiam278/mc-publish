@@ -40,7 +40,13 @@ export function createVersion(author: string, slug: string, data: Record<string,
         })
     });
     platforms.forEach((platform) => {
-        data.platformDependencies[platform] = gameVersions;
+        if (platform == HangarPlatform.Velocity) {
+            data.platformDependencies[HangarPlatform.Velocity] = ["3.2"];
+        }
+        else 
+        {
+            data.platformDependencies[platform] = gameVersions;
+        }
     });
     form.append('versionUpload', JSON.stringify(data), { contentType: 'application/json' });
 
