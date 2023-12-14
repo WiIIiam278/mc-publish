@@ -55,7 +55,7 @@ export function createVersion(author: string, slug: string, data: Record<string,
                 });
                 break;
             case HangarPlatform.Velocity:
-                data.platformDependencies[platform] = ["3.2"];
+                data.platformDependencies[platform] = ["3.3"];
                 break;
         }
     });
